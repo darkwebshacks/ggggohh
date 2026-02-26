@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Pred AI Football ⚽</title>
+
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0b1c24,#000);
+  color:#fff;
+}
+
+.main{
+  display:flex;
+  justify-content:center;
+  padding-top:40px;
+}
+
+.card{
+  width:95%;
+  max-width:420px;
+  background:rgba(20,20,20,.9);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 0 40px rgba(0,255,255,.12);
+  animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+h1{text-align:center;margin-bottom:6px}
+p{text-align:center;opacity:.85;margin-bottom:18px}
+
+input{
+  width:100%;
+  padding:13px;
+  margin:8px 0;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#00bcd4,#2196f3);
+  color:#000;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.buy{background:#ff9800}
+.hidden{display:none}
+.error{color:#ff4d4d;text-align:center;margin-top:10px}
+.success{color:#00ffcc;text-align:center;margin-top:10px}
+
+/* BOTTOM SECTION */
+.bottom{
+  margin-top:50px;
+  padding:25px;
+  background:#050b10;
+}
+
+.section{
+  max-width:800px;
+  margin:auto;
+}
+
+.section h2{
+  color:#00ffcc;
+  margin-bottom:10px;
+}
+
+.match{
+  background:#0f1720;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+  font-size:14px;
+}
+
+.success-tag{
+  color:#00ff6a;
+  font-weight:700;
+}
+
+/* FLOATING CONTACT PANEL – SAFE CLICK 
+VERSION */
+#contactPanel{
+  position:fixed;
+  bottom:90px;
+  right:15px;
+  background:linear-gradient(135deg,#00e5ff,#00ff99);
+  color:#000;
+  padding:8px 10px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+  font-size:11px;
+  box-shadow:0 10px 25px rgba(0,0,0,.55);
+  z-index:50;                 /* LOWER 
+than buttons */
+  pointer-events:none;        /* 👈 DOES 
+NOT BLOCK CLICKS */
+}
+
+/* ENABLE clicks ONLY on the button */
+#contactPanel a{
+  pointer-events:auto;        /* 👈 
+clickable */
+  background:#000;
+  color:#00ffcc;
+  padding:6px 10px;
+  border-radius:14px;
+  text-decoration:none;
+  font-size:11px;
+  white-space:nowrap;
+}
+</style>
+</head>
+
+<body>
+
+<div class="main">
+
+<!-- ACTIVATION -->
+<div class="card" id="activationBox">
+  <h1>🧠 Dark Pred AI Football ⚽</h1>
+  <p>Welcome! Enter your details to unlock access 🔐</p>
+
+  <input id="phone" placeholder="📱 Phone number">
+  <input id="email" placeholder="📧 Email address">
+  <input id="device" placeholder="📱 Device name">
+  <input id="code" placeholder="🔑 Activation code">
+
+  <button id="unlockBtn">Unlock Access 🚀</button>
+  <div id="msg"></div>
+  <button id="buyBtn" class="buy hidden">💳 Purchase Activation Code</button>
+</div>
+
+<!-- AI PREDICTION -->
+<div class="card hidden" id="predictBox">
+  <h1>⚽ AI Correct Score</h1>
+  <input id="match" placeholder="e.g Arsenal vs Chelsea">
+  <button id="predictBtn">Predict Score 🤖</button>
+  <div id="output" class="success"></div>
+</div>
+
+</div>
+
+<!-- BOTTOM INFO -->
+<div class="bottom" id="bottomInfo">
+  <div class="section">
+    <h2>✅ Today free Games</h2>
+
+    <div class="match"> Crvena vs lille — <b>0: 1</b> <span class="success-tag">✔ won</span></div>
+    <div class="match">? vs ?— <b>3 : 1</b> <span class="success-tag">✔ SUCCESS</span></div>
+
+    <h2 style="margin-top:20px">🎁 Free Games</h2>
+
+    <div class="match">
+       Stuttgart vs Celtic <br>
+      Tip: <b>Under 4</b> | Odds: <b>2.84</b><br>
+      Result: <b>0 : 1</b> <span class="Success-tag">✔ won</span>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING CONTACT PANEL -->
+<div id="contactPanel">
+  <span>🔑 Need activation code?</span>
+  <a href="mailto:darkwebshacks@gmail.com?subject=Dark%20Pred%20AI%20Activation%20Request&body=Hello%20Dark%20Pred%20AI,%0A%0AI%20want%20to%20request%20an%20activation%20code.%0A%0AThank%20you."
+     target="_blank">
+     Contact Developer ✉️
+  </a>
+</div>
+
+<script>
+const VALID_CODE = "22222222111";
+const predictionCache = {};
+
+const unlockBtn = document.getElementById("unlockBtn");
+const buyBtn = document.getElementById("buyBtn");
+const predictBtn = document.getElementById("predictBtn");
+const msg = document.getElementById("msg");
+
+unlockBtn.addEventListener("click", activate);
+buyBtn.addEventListener("click", buyCode);
+predictBtn.addEventListener("click", predict);
+
+function activate(){
+  const phoneVal = document.getElementById("phone").value.trim();
+  const emailVal = document.getElementById("email").value.trim();
+  const deviceVal = document.getElementById("device").value.trim();
+  const codeVal = document.getElementById("code").value.trim();
+
+  msg.textContent = "";
+  msg.className = "";
+  buyBtn.classList.add("hidden");
+
+  if(!phoneVal || !emailVal || !deviceVal || !codeVal){
+    msg.textContent = "⚠️ Please fill all fields";
+    msg.className = "error";
+    return;
+  }
+
+  if(codeVal === VALID_CODE){
+    document.getElementById("activationBox").classList.add("hidden");
+    document.getElementById("predictBox").classList.remove("hidden");
+    document.getElementById("bottomInfo").style.display = "none";
+    document.getElementById("contactPanel").style.display = "none";
+  }else{
+    msg.textContent = "❌ Wrong activation code";
+    msg.className = "error";
+    buyBtn.classList.remove("hidden");
+  }
+}
+
+function buyCode(){
+  location.href =
+    "mailto:darkwebshacks@gmail.com?subject=Activation%20Code%20Request&body=Please%20I%20need%20access%20to%20Dark%20Pred%20AI.";
+}
+
+function predict(){
+  const match = document.getElementById("match").value.trim();
+  const output = document.getElementById("output");
+
+  if(!match){
+    output.textContent = "⚠️ Enter a match";
+    return;
+  }
+
+  const key = match.toLowerCase();
+
+  if(predictionCache[key]){
+    output.innerHTML =
+      `🏟 ${match}<br><br>⚽ <b>Correct Score:</b> ${predictionCache[key]}<br><small>🔒 Locked</small>`;
+    return;
+  }
+
+  output.textContent = "AI analyzing 🤖⚽";
+
+  const scores = ["1-0","2-0","2-1","1-1","3-1","0-1"];
+  const result = scores[Math.floor(Math.random()*scores.length)];
+  predictionCache[key] = result;
+
+  setTimeout(()=>{
+    output.innerHTML =
+      `🏟 ${match}<br><br>⚽ <b>Correct Score:</b> ${result}<br><small>🔒 Locked</small>`;
+  },1200);
+}
+</script>
+</html>
