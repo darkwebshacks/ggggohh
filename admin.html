@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Football AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, button { margin: 5px 0; padding: 8px; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+
+  <label for="adminPassword">Admin Password:</label>
+  <input type="password" id="adminPassword" placeholder="Enter password">
+
+  <h2>Add Match</h2>
+  <input type="text" id="teamA" placeholder="Team A">
+  <input type="text" id="teamB" placeholder="Team B">
+  <input type="text" id="prediction" placeholder="Prediction (e.g., 2-1)">
+  <input type="text" id="odds" placeholder="Odds (e.g., 1.75)">
+  <input type="date" id="date" placeholder="Date">
+  <button onclick="addMatch()">Add Match</button>
+
+  <h2>All Matches</h2>
+  <table id="matchesTable">
+    <thead>
+      <tr>
+        <th>Team A</th>
+        <th>Team B</th>
+        <th>Prediction</th>
+        <th>Odds</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const ADMIN_PASSWORD = "supersecret"; // Change this to your real password
+
+    async function addMatch() {
+      const password = document.getElementById("adminPassword").value;
+      const teamA = document.getElementById("teamA").value;
+      const teamB = document.getElementById("teamB").value;
+      const prediction = document.getElementById("prediction").value;
+      const odds = document.getElementById("odds").value;
+      const date = document.getElementById("date").value;
+
+      if(password !== ADMIN_PASSWORD){
+        alert("Incorrect password!");
+        return;
+      }
+
+      const res = await fetch("/admin/add-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ teamA, teamB, prediction, odds, date })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Match added successfully!");
+        document.getElementById("teamA").value = "";
+        document.getElementById("teamB").value = "";
+        document.getElementById("prediction").value = "";
+        document.getElementById("odds").value = "";
+        document.getElementById("date").value = "";
+        loadMatches();
+      } else {
+        alert("Error: " + (data.error || "Unknown error"));
+      }
+    }
+
+    async function loadMatches() {
+      const res = await fetch("/matches");
+      const matches = await res.json();
+      const tbody = document.querySelector("#matchesTable tbody");
+      tbody.innerHTML = "";
+      matches.forEach(m => {
+        const row = `<tr>
+          <td>${m.teamA}</td>
+          <td>${m.teamB}</td>
+          <td>${m.prediction}</td>
+          <td>${m.odds}</td>
+          <td>${m.date}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    loadMatches();
+  </script>
+</body>
+</html>
