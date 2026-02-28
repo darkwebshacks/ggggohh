@@ -96,8 +96,7 @@ button{
   font-weight:700;
 }
 
-/* FLOATING CONTACT PANEL – SAFE CLICK 
-VERSION */
+/* FLOATING CONTACT PANEL */
 #contactPanel{
   position:fixed;
   bottom:90px;
@@ -112,16 +111,12 @@ VERSION */
   font-weight:700;
   font-size:11px;
   box-shadow:0 10px 25px rgba(0,0,0,.55);
-  z-index:50;                 /* LOWER 
-than buttons */
-  pointer-events:none;        /* 👈 DOES 
-NOT BLOCK CLICKS */
+  z-index:50;
+  pointer-events:none;
 }
 
-/* ENABLE clicks ONLY on the button */
 #contactPanel a{
-  pointer-events:auto;        /* 👈 
-clickable */
+  pointer-events:auto;
   background:#000;
   color:#00ffcc;
   padding:6px 10px;
@@ -139,7 +134,7 @@ clickable */
 
 <!-- ACTIVATION -->
 <div class="card" id="activationBox">
-  <h1>🧠 Dark Pred AI Football ⚽</h1>
+  <h1>⚽ Dark Pred AI Football ⚽</h1>
   <p>Welcome! Enter your details to unlock access 🔐</p>
 
   <input id="phone" placeholder="📱 Phone number">
@@ -165,13 +160,9 @@ clickable */
 <!-- BOTTOM INFO -->
 <div class="bottom" id="bottomInfo">
   <div class="section">
-    
     <h2 style="margin-top:20px">🎁 Free Games</h2>
-
-    <div class="match">
-       Ceuta B vs Cadiz B<br>
-      Tip: <b>(1)Over 1 </b> | Odds: <b>2.16</b><br>
-      Result: <b>? : ?</b> <span class="Success-tag">✔ 17:15</span>
+    <div id="matchesContainer">
+      <!-- Matches from server will appear here -->
     </div>
   </div>
 </div>
@@ -179,8 +170,7 @@ clickable */
 <!-- FLOATING CONTACT PANEL -->
 <div id="contactPanel">
   <span>🔑 Need activation code?</span>
-  <a href="mailto:darkwebshacks@gmail.com?subject=Dark%20Pred%20AI%20Activation%20Request&body=Hello%20Dark%20Pred%20AI,%0A%0AI%20want%20to%20request%20an%20activation%20code.%0A%0AThank%20you."
-     target="_blank">
+  <a href="mailto:darkwebshacks@gmail.com?subject=Dark%20Pred%20AI%20Activation%20Request&body=Hello%20Dark%20Pred%20AI," target="_blank">
      Contact Developer ✉️
   </a>
 </div>
@@ -231,7 +221,7 @@ function buyCode(){
     "mailto:darkwebshacks@gmail.com?subject=Activation%20Code%20Request&body=Please%20I%20need%20access%20to%20Dark%20Pred%20AI.";
 }
 
-function predict(){
+async function predict(){
   const match = document.getElementById("match").value.trim();
   const output = document.getElementById("output");
 
@@ -240,24 +230,61 @@ function predict(){
     return;
   }
 
-  const key = match.toLowerCase();
-
-  if(predictionCache[key]){
-    output.innerHTML =
-      `🏟 ${match}<br><br>⚽ <b>Correct Score:</b> ${predictionCache[key]}<br><small>🔒 Locked</small>`;
-    return;
-  }
-
   output.textContent = "AI analyzing 🤖⚽";
 
-  const scores = ["1-0","2-0","2-1","1-1","3-1","0-1"];
-  const result = scores[Math.floor(Math.random()*scores.length)];
-  predictionCache[key] = result;
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ match })
+    });
 
-  setTimeout(()=>{
-    output.innerHTML =
-      `🏟 ${match}<br><br>⚽ <b>Correct Score:</b> ${result}<br><small>🔒 Locked</small>`;
-  },1200);
+    const data = await res.json();
+    if(data.score){
+      output.innerHTML =
+        `🏟 ${match}<br><br>⚽ <b>Correct Score:</b> ${data.score}<br><small>🔒 Locked</small>`;
+    } else {
+      output.textContent = "❌ Prediction failed";
+    }
+
+  } catch(err){
+    output.textContent = "❌ Error contacting AI";
+  }
 }
+
+// --- Load matches dynamically ---
+async function loadMatches() {
+  const container = document.getElementById("matchesContainer");
+  container.innerHTML = "Loading matches...";
+
+  try {
+    const res = await fetch("/matches");
+    const matches = await res.json();
+
+    if (!matches || matches.length === 0) {
+      container.innerHTML = "<p>No matches available 😔</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+    matches.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "match";
+      div.innerHTML = `
+        ${m.teamA} vs ${m.teamB}<br>
+        Tip: <b>${m.prediction || "?"}</b> | Odds: <b>${m.odds || "?"}</b><br>
+        Result: <b>${m.result || "? : ?"}</b> <span class="success-tag">${m.status || "pending"}</span>
+      `;
+      container.appendChild(div);
+    });
+  } catch (e) {
+    container.innerHTML = "<p style='color:red'>Error loading matches</p>";
+    console.error("Error fetching matches:", e);
+  }
+}
+
+// Load matches on page load
+loadMatches();
 </script>
+</body>
 </html>
