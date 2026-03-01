@@ -1,107 +1,70 @@
+// server.js
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
-import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import fs from "fs";
+import fetch from "node-fetch";
 
-/* ------------------ FIX __dirname FOR ES MODULE ------------------ */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-/* ------------------ CONFIG ------------------ */
+const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-const HF_URL =
-  "https://router.huggingface.co/hf-inference/models/google/flan-t5-small";
+// GROQ API
+const GROQ_KEY = process.env.GROQ_KEY; // set this in your .env
+const GROQ_URL = "https://api.groq.ai/v1/engines/football-score/infer";
 
-const HF_TOKEN = process.env.HF_TOKEN; // set in .env or Render
-
+// JSON file for matches
 const MATCHES_FILE = path.join(__dirname, "matches.json");
 
-/* ------------------ MIDDLEWARE ------------------ */
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname)));
 
-/* ------------------ MATCH STORAGE ------------------ */
+// Load/save matches
 function loadMatches() {
   if (!fs.existsSync(MATCHES_FILE)) return [];
-  try {
-    return JSON.parse(fs.readFileSync(MATCHES_FILE, "utf8"));
-  } catch {
-    return [];
-  }
+  const data = fs.readFileSync(MATCHES_FILE, "utf8");
+  try { return JSON.parse(data); } catch { return []; }
 }
-
 function saveMatches(matches) {
   fs.writeFileSync(MATCHES_FILE, JSON.stringify(matches, null, 2));
 }
 
-/* ------------------ ROUTES ------------------ */
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// Serve frontend
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.get("/matches", (req, res) => res.json(loadMatches()));
 
-app.get("/matches", (req, res) => {
-  res.json(loadMatches());
-});
-
-/* ------------------ AI PREDICTION ------------------ */
+// AI prediction endpoint using GROQ
 app.post("/predict", async (req, res) => {
+  const { match } = req.body;
+  if (!match) return res.status(400).json({ error: "Match is required" });
+
+  const prompt = `Predict the most likely correct score for this football match. Return only one score in X-Y format.\nMatch: ${match}`;
+
   try {
-    const { match } = req.body;
-    if (!match) {
-      return res.status(400).json({ error: "Match is required" });
-    }
-
-    const prompt = `
-Predict the most likely football correct score.
-Return ONLY one score in format X-Y.
-
-Match: ${match}
-`;
-
-    const hfRes = await fetch(HF_URL, {
+    const groqRes = await fetch(GROQ_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${HF_TOKEN}`,
+        "Authorization": `Bearer ${GROQ_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: { max_new_tokens: 10 },
-      }),
+      body: JSON.stringify({ prompt }),
     });
 
-    const rawText = await hfRes.text();
-    let data;
+    const text = await groqRes.text(); // Groq returns plain text
+    console.log("Groq raw output:", text);
 
-    try {
-      data = JSON.parse(rawText);
-    } catch {
-      console.error("HF raw response:", rawText);
-      return res.json({ match, prediction: "N/A" });
-    }
-
-    const generated =
-      data?.[0]?.generated_text ||
-      data?.generated_text ||
-      "";
-
-    const scoreMatch = generated.match(/\b\d-\d\b/);
-    const score = scoreMatch ? scoreMatch[0] : "N/A";
+    // Extract X-Y score from text
+    const scoreMatch = text.match(/(\d)\s*[-–:]\s*(\d)/);
+    const score = scoreMatch ? `${scoreMatch[1]}-${scoreMatch[2]}` : "N/A";
 
     res.json({ match, prediction: score });
-
   } catch (err) {
     console.error("Predict error:", err.message);
-    res.json({ match: req.body?.match, prediction: "N/A" });
+    res.json({ match, prediction: "N/A" });
   }
 });
 
-/* ------------------ START SERVER ------------------ */
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
