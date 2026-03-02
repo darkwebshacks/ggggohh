@@ -9,3 +9,14 @@
     "status": "Won"
   }
 ]
+[
+  {
+   "id": 2,
+   "teamA": "petrich"
+   "teamB": "CSKA sofia"
+   "prediction": "Under 3",
+   "odds": "1.85",
+   "result": "? : ?",
+   "status": "Pending"
+  }
+]
