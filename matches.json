@@ -2,7 +2,7 @@
   {
     "teamA": "Petrich",
     "teamB": "cska sofia",
-    "tip": "Under 3",
+    "prediction": "Under 3",
     "odds": 1.89,
     "result": "? : ?",
     "status": "pending"
@@ -10,7 +10,7 @@
   {
     "teamA": "Korean W",
     "teamB": "ir iran W",
-    "tip": "H1 under 2",
+    "prediction": "H1 under 2",
     "odds": 2.04,
     "result": "3 : 0",
     "status": "Win"
