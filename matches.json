@@ -3,24 +3,24 @@
     "teamA": "Orebro",
     "teamB": "Hammerby IF",
     "prediction": "1 over 0.5",
-    "odds": 1.89,
+    "odds": 1.99,
+    "result": "3 : 5",
+    "status": "Win"
+  },
+  {
+    "teamA": "Melbourne",
+    "teamB": "buriram",
+    "prediction": "over 3.5",
+    "odds": 5.00,
     "result": "? : ?",
     "status": "pending"
   },
   {
-    "teamA": "Petrich",
-    "teamB": "CSKA Sofia",
-    "prediction": "Under 3",
-    "odds": 1.89,
-    "result": "2 : 6",
-    "status": "❌"
-  },
-  {
-    "teamA": "Korea W",
-    "teamB": "Iran W",
-    "prediction": "H1 Under 2",
+    "teamA": "Gangwon",
+    "teamB": "Machida",
+    "prediction": "2 over 1",
     "odds": 2.04,
-    "result": "3 : 0",
-    "status": "Win"
+    "result": "? : ?",
+    "status": "pending"
   }
 ]
