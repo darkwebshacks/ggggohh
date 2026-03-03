@@ -8,18 +8,18 @@
     "status": "Win"
   },
   {
-    "teamA": "Melbourne",
-    "teamB": "buriram",
-    "prediction": "over 3.5",
-    "odds": 5.00,
+    "teamA": "Atletico",
+    "teamB": "Racing club",
+    "prediction": "under 3",
+    "odds": 1.50,
     "result": "? : ?",
     "status": "pending"
   },
   {
-    "teamA": "Gangwon",
-    "teamB": "Machida",
-    "prediction": "2 over 1",
-    "odds": 2.04,
+    "teamA": "Barcelona sc",
+    "teamB": "Botafogo",
+    "prediction": "under 2.5",
+    "odds": 2.84,
     "result": "? : ?",
     "status": "pending"
   }
