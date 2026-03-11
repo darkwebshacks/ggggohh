@@ -1,19 +1,19 @@
 [
   {
-    "teamA": "Eyuspor",
-    "teamB": "Konyaspor",
-    "prediction": "over 2.5",
-    "odds": 1.88,
+    "teamA": "psg",
+    "teamB": "Chelsea",
+    "prediction": "btts",
+    "odds": 1.58,
     "result": "? : ?",
-    "status": "18:30 pm"
+    "status": "21:30 pm"
   },
   {
-    "teamA": "Karvina",
-    "teamB": "Viktoria",
-    "prediction": "over 1.5",
-    "odds": 1.50,
+    "teamA": "bodo",
+    "teamB": "sporting",
+    "prediction": "btts",
+    "odds": 1.55,
     "result": "? : ?",
-    "status": "17:00 pm"
+    "status": "21:00 pm"
   },
   {
     "teamA": "bodrum",
@@ -21,6 +21,6 @@
     "prediction": "over 2.5",
     "odds": 2.00,
     "result": "? : ?",
-    "status": "18:30 pm"
+    "status": "past"
   }
 ]
