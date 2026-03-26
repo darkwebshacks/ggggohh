@@ -1,26 +1,26 @@
 [
   {
-    "teamA": "psg",
-    "teamB": "Chelsea",
-    "prediction": "btts",
-    "odds": 1.58,
+    "teamA": "denmark",
+    "teamB": "fyr mace",
+    "prediction": "home",
+    "odds": 1.21,
     "result": "? : ?",
-    "status": "21:30 pm"
+    "status": "22:45 pm"
   },
   {
-    "teamA": "bodo",
-    "teamB": "sporting",
-    "prediction": "btts",
-    "odds": 1.55,
+    "teamA": "vietnam",
+    "teamB": "bangladesh",
+    "prediction": "home",
+    "odds": 1.11,
     "result": "? : ?",
-    "status": "21:00 pm"
+    "status": "15:00 pm"
   },
   {
-    "teamA": "bodrum",
-    "teamB": "igdir",
-    "prediction": "over 2.5",
-    "odds": 2.00,
+    "teamA": "deportes",
+    "teamB": "palestino",
+    "prediction": "over 1.5",
+    "odds": 1.25,
     "result": "? : ?",
-    "status": "past"
+    "status": "00:00"
   }
 ]
